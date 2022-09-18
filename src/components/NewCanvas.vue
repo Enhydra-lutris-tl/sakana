@@ -15,6 +15,7 @@ export default {
   setup() {
     const a = ref(200)
     const sakanaImg = ref()
+    const imgShow = ref(0)
     const imgSrc = require('@/assets/img/鱼.png')
     const lineStyle = reactive(
         {
@@ -62,7 +63,8 @@ export default {
       const ceshi = new Sakana()
       // 鼠标按住移动事件
       onmousedown = (e) => {
-        console.log('鼠标按下', e.x, e.y)
+        console.log('鼠标按下', `y坐标为${e.y})`)
+        imgShow.value = 1
         ceshi.y = e.y - 100
         sakanaImg.value.style.top = e.y - 100 + 'px'
 
@@ -88,6 +90,7 @@ export default {
 
 
         onmouseup = (e) => {
+          imgShow.value = 0
           ceshi.ny = e.y - 100
           onmousemove = null
           ceshi.k = 5
@@ -97,8 +100,7 @@ export default {
           const a = setInterval(()=>{
             ceshi.v *= ceshi.dg
             const yuanchang =(ceshi.ny - ceshi.y)
-            console.log('长度',yuanchang)
-            if (sakanaImg.value.offsetTop >= yuanchang/2 + ceshi.ny){
+            if (sakanaImg.value.offsetTop >= ceshi.ny - yuanchang/2){
               sakanaImg.value.style.top = sakanaImg.value.offsetTop - ceshi.v +'px'
             }else{
               sakanaImg.value.style.top = sakanaImg.value.offsetTop + ceshi.v +'px'
@@ -106,12 +108,11 @@ export default {
             if (ceshi.v < 1){
               clearInterval(a)
             }
+            if (imgShow.value ===1){
+              clearInterval(a)
+            }
           },1000/60)
-          console.log(ceshi)
-          console.log('取消', ceshi.F)
-
-
-
+          console.log('鼠标松开', `重力为${ceshi.F}N`,`y坐标为${e.y})`)
         }
       }
     })
@@ -134,7 +135,6 @@ export default {
   height: 200px;
   width: 230px;
   transform-origin: 50% 98%;
-
 }
 
 .sakana-img img {

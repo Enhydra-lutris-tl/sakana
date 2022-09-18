@@ -52,7 +52,7 @@ export default {
   height: 100%;
 }
 .active{
-  animation: bounce .2s infinite;
+  animation: bounce .1s infinite;
 }
 @keyframes bounce {
   0%{

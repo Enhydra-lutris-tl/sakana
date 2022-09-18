@@ -1,19 +1,15 @@
 <template>
-  <LongNai ref="childOne"></LongNai>
-  <QianShu ref="childTwo"></QianShu>
+  <NewCanvas></NewCanvas>
   <botton @click="yigeanniu">点击</botton>
 </template>
 
 <script>
-import LongNai from './components/LongNai'
 import {ref, reactive} from "vue";
-import QianShu from "@/components/QianShu";
-
+import NewCanvas from '@/components/NewCanvas'
 export default {
   name: 'App',
   components: {
-    QianShu,
-    LongNai
+    NewCanvas
   },
   setup() {
     const childOne = ref()

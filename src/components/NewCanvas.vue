@@ -1,8 +1,8 @@
 <template>
   <div class="canvas-back">
-    <canvas height="600" width="600" style="border: red 1px solid" id="fuck"></canvas>
+    <canvas style="border: red 1px solid;position:absolute;top: 0;left: 0" id="fuck"></canvas>
     <div class="sakana-img" ref="sakanaImg">
-      <img :src="imgSrc" alt="111111">
+      <img :src="imgSrc" alt="111111" draggable="false">
     </div>
   </div>
 </template>
@@ -12,8 +12,8 @@ import {onMounted, reactive, ref} from "vue";
 
 export default {
   name: "NewCanvas",
+
   setup() {
-    const a = ref(200)
     const sakanaImg = ref()
     const imgShow = ref(0)
     const imgSrc = require('@/assets/img/鱼.png')
@@ -31,88 +31,129 @@ export default {
     )
 
     // 角色模板
+    //
     function Sakana() {
-      this.gravity = 5 //重力
-      this.x = null //x坐标
-      this.y = null //y坐标
-      this.nx = null //释放坐标
+      //弹簧相关
+      this.H = 600
+      this.minH = 300
+      this.maxH = 900
+
+      this.maxW = 100 //最大横向距离
+      // 弹簧低端位置
+      this.Tx = 300
+      this.Ty = 900 //例900
+
+
+      //释放坐标
+      this.nx = null
       this.ny = null
-      this.k = null //弹力系数
-      this.dg = null //衰减系数
 
+      this.vY = null
+      this.vX = null
 
+      this.dgY = 0.98 //衰减系数
+      this.dgX = 0.96
 
-
-
+      // 初始计算属性属性
       this.bounce = function () {
-        if (this.k * (this.ny - this.y) > 0) {
-          this.F = Math.abs(this.k * (this.ny - this.y))
-          this.stress = this.F - this.gravity
-        } else {
-          this.F = Math.abs(this.k * (this.ny - this.y))
-          this.stress = this.F + this.gravity
-        }
-        this.v = this.stress*0.1
+        // 人物初始状态
+        this.x = this.Tx //x坐标
+        this.y = this.Ty - this.H - 100//y坐标
       }
+
+    }
+
+    function beval(x, y) {
+      const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+      const sinOfX = y / r
+
+      return Math.round((Math.asin(sinOfX) * 180) / Math.PI)
     }
 
 
     onMounted(() => {
       const canvas = document.getElementById('fuck')
+      canvas.height = document.body.offsetHeight
+      canvas.width = 900
       const ctx = canvas.getContext('2d')
-      const ceshi = new Sakana()
-      // 鼠标按住移动事件
-      onmousedown = (e) => {
-        console.log('鼠标按下', `y坐标为${e.y})`)
+      const sakana = new Sakana()
+      sakana.bounce()
+      sakanaImg.value.style.top = sakana.y + 'px'
+      sakanaImg.value.style.left = sakana.x + 'px'
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.beginPath()
+        ctx.lineWidth = 10
+        const toX = sakana.x + 115
+        const drawX = sakanaImg.value.offsetLeft + 115
+        const drawY = sakanaImg.value.offsetTop + 200
+        ctx.moveTo(toX, sakana.Ty);
+        ctx.quadraticCurveTo(toX, sakana.Ty-100, drawX, drawY);
+        ctx.stroke();
+      }
+
+      draw()
+
+
+      sakanaImg.value.onmousedown = () => {
+        console.log('鼠标按下')
         imgShow.value = 1
-        ceshi.y = e.y - 100
-        sakanaImg.value.style.top = e.y - 100 + 'px'
-
-
-        const x = setInterval(() => {
-          ctx.clearRect(0, 0, 600, 600)
-          ctx.beginPath()
-          ctx.moveTo(300, 600);
-          ctx.quadraticCurveTo(300, 420, a.value, 400);
-          ctx.stroke();
-          a.value += 10
-          if (a.value === 400) {
-            clearInterval(x)
-            console.log('动画结束')
-            a.value = 200
-          }
-        }, 1000 / 60)
-
 
         onmousemove = (e) => {
-          sakanaImg.value.style.top = e.y - 100 + 'px'
+          sakana.ny = e.y - 100
+          sakana.nx = e.x - 115
+          if (sakana.ny >= sakana.Ty - sakana.minH) {
+            sakana.ny = sakana.Ty - sakana.minH
+          } else if (sakana.ny <= sakana.Ty - sakana.maxH) {
+            sakana.ny = sakana.Ty - sakana.maxH
+          }
+
+          if (sakana.nx >= sakana.x + sakana.maxW) {
+            sakana.nx = sakana.x + sakana.maxW
+          } else if (sakana.nx <= sakana.x - sakana.maxW) {
+            sakana.nx = sakana.x - sakana.maxW
+          }
+          sakanaImg.value.style.left = sakana.nx + 'px'
+          sakanaImg.value.style.top = sakana.ny + 'px'
+          const a = beval(sakanaImg.value.offsetLeft - sakana.x,sakanaImg.value.offsetTop - sakana.y)
+          sakanaImg.value.style.transform = `rotate(${a}deg)`
+          draw()
+
         }
 
-
         onmouseup = (e) => {
-          imgShow.value = 0
-          ceshi.ny = e.y - 100
           onmousemove = null
-          ceshi.k = 5
-          ceshi.dg = 0.98
-          ceshi.bounce()
-          //回弹速度
-          const a = setInterval(()=>{
-            ceshi.v *= ceshi.dg
-            const yuanchang =(ceshi.ny - ceshi.y)
-            if (sakanaImg.value.offsetTop >= ceshi.ny - yuanchang/2){
-              sakanaImg.value.style.top = sakanaImg.value.offsetTop - ceshi.v +'px'
-            }else{
-              sakanaImg.value.style.top = sakanaImg.value.offsetTop + ceshi.v +'px'
+          imgShow.value = 0;
+
+          //弹性运动模板
+          (function elasticityMode() {
+            sakana.vY += (sakanaImg.value.offsetTop - sakana.y) / 10
+            sakana.vX += (sakanaImg.value.offsetLeft - sakana.x) / 10
+
+            sakana.vY *= sakana.dgY
+            sakana.vX *= sakana.dgX
+
+            sakanaImg.value.style.top = sakanaImg.value.offsetTop - sakana.vY + 'px'
+            sakanaImg.value.style.left = sakanaImg.value.offsetLeft - sakana.vX + 'px'
+
+            draw()
+            const a = beval(sakanaImg.value.offsetLeft - sakana.x,sakanaImg.value.offsetTop - sakana.y)
+            sakanaImg.value.style.transform = `rotate(${a}deg)`
+            const anm = requestAnimationFrame(elasticityMode)
+            if (Math.abs(sakana.vX) <= 1 && Math.abs(sakanaImg.value.offsetLeft - sakana.vX) <= 1) {
+              sakanaImg.value.style.top = sakana.y + 'px'
+              sakana.v = 0
+              cancelAnimationFrame(anm)
             }
-            if (ceshi.v < 1){
-              clearInterval(a)
+            if (imgShow.value === 1) {
+              cancelAnimationFrame(anm)
             }
-            if (imgShow.value ===1){
-              clearInterval(a)
-            }
-          },1000/60)
-          console.log('鼠标松开', `重力为${ceshi.F}N`,`y坐标为${e.y})`)
+          })();
+
+
+          onmouseup = null
+          console.log('鼠标松开', `y坐标为${e.y - 100})`)
         }
       }
     })
@@ -121,7 +162,7 @@ export default {
     return {
       lineStyle,
       sakanaImg,
-      imgSrc
+      imgSrc,
     }
   }
 }

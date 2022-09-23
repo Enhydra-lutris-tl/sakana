@@ -6,6 +6,7 @@
 <script>
 import {ref, reactive} from "vue";
 import NewCanvas from '@/components/NewCanvas'
+
 export default {
   name: 'App',
   components: {

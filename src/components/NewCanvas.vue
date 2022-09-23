@@ -38,13 +38,14 @@ export default {
       this.minH = 300
       this.maxH = 900
 
-      this.maxW = 100 //最大横向距离
+      this.maxW = 300 //最大横向距离
       // 弹簧低端位置
       this.Tx = 300
       this.Ty = 900 //例900
 
 
       //释放坐标
+      this.maxR = 60
       this.nx = null
       this.ny = null
 
@@ -63,12 +64,12 @@ export default {
 
     }
 
-    function beval(x, y) {
-      const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
-      const sinOfX = y / r
-
-      return Math.round((Math.asin(sinOfX) * 180) / Math.PI)
-    }
+    // function beval(x, y) {
+    //   const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+    //   const sinOfX = y / r
+    //
+    //   return Math.round((Math.asin(sinOfX) * 180) / Math.PI)
+    // }
 
 
     onMounted(() => {
@@ -111,13 +112,17 @@ export default {
 
           if (sakana.nx >= sakana.x + sakana.maxW) {
             sakana.nx = sakana.x + sakana.maxW
+
           } else if (sakana.nx <= sakana.x - sakana.maxW) {
             sakana.nx = sakana.x - sakana.maxW
           }
+
+          sakana.r = (sakana.nx - sakana.Tx)/5
+
           sakanaImg.value.style.left = sakana.nx + 'px'
           sakanaImg.value.style.top = sakana.ny + 'px'
-          const a = beval(sakanaImg.value.offsetLeft - sakana.x,sakanaImg.value.offsetTop - sakana.y)
-          sakanaImg.value.style.transform = `rotate(${a}deg)`
+
+          sakanaImg.value.style.transform = `rotate(${sakana.r}deg)`
           draw()
 
         }
@@ -138,8 +143,10 @@ export default {
             sakanaImg.value.style.left = sakanaImg.value.offsetLeft - sakana.vX + 'px'
 
             draw()
-            const a = beval(sakanaImg.value.offsetLeft - sakana.x,sakanaImg.value.offsetTop - sakana.y)
-            sakanaImg.value.style.transform = `rotate(${a}deg)`
+
+            sakana.nx = sakanaImg.value.offsetLeft
+            sakana.r = (sakana.nx - sakana.Tx)/5
+            sakanaImg.value.style.transform = `rotate(${sakana.r}deg)`
             const anm = requestAnimationFrame(elasticityMode)
             if (Math.abs(sakana.vX) <= 1 && Math.abs(sakanaImg.value.offsetLeft - sakana.vX) <= 1) {
               sakanaImg.value.style.top = sakana.y + 'px'

@@ -1,50 +1,18 @@
 <template>
-  <NewCanvas></NewCanvas>
-  <botton @click="yigeanniu">点击</botton>
+  <NewSakana></NewSakana>
+  <NewBack></NewBack>
 </template>
 
 <script>
-import {ref, reactive} from "vue";
-import NewCanvas from '@/components/NewCanvas'
+import NewSakana from '@/components/NewSakana'
+import NewBack from '@/components/NewBack'
 
 export default {
   name: 'App',
   components: {
-    NewCanvas
+    NewSakana,
+    NewBack
   },
-  setup() {
-    const childOne = ref()
-    const childTwo = ref()
-    const toShow = ref(0)
-    const imgLocation = reactive({
-      imgX: 10,
-      imgY: 10
-    })
-    // function imgShow() {
-    //   toShow.value = 1
-    //   setTimeout(() => {
-    //     toShow.value = 0
-    //   }, 900)
-    // }
-    // window.onclick =function (event){
-    //   console.log(event.x, event.y)
-    //   imgLocation.imgX = event.x
-    //   imgLocation.imgY =event.y
-    //   imgShow()
-    // }
-    function yigeanniu() {
-      childOne.value.ceshiClick()
-      childTwo.value.bounceClick()
-    }
-
-    return {
-      childOne,
-      childTwo,
-      toShow,
-      imgLocation,
-      yigeanniu
-    }
-  }
 }
 </script>
 

@@ -1,0 +1,44 @@
+{
+  "id": "3594055",
+  "name": "music",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "音乐项目相关",
+  "glyphs": [
+    {
+      "icon_id": "1110454",
+      "name": "暂停",
+      "font_class": "zanting",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "8777165",
+      "name": "image",
+      "font_class": "icon-test2",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "8776784",
+      "name": "order",
+      "font_class": "icon-test",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "8777535",
+      "name": "page_last",
+      "font_class": "icon-test1",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
+      "icon_id": "7141644",
+      "name": "music",
+      "font_class": "music",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    }
+  ]
+}
